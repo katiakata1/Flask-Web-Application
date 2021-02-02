@@ -2,10 +2,15 @@ from flask import Flask, render_template, request, url_for, redirect, session, f
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
+
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = None
 app.config['SECRET_KEY'] = 'secret_key'
 db = SQLAlchemy(app)
+
+
 
 
 class User(db.Model):
@@ -17,6 +22,7 @@ class User(db.Model):
     def __repr__(self):
         return '<Name %r>' % self.id
 
+
 class Supplies(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(200), nullable=False)
@@ -26,8 +32,10 @@ class Supplies(db.Model):
         return '<Task %r>' % self.id
 
 
-@app.route('/login', methods = ['GET', 'POST'])
 
+
+
+@app.route('/', methods = ['GET', 'POST'])
 def login():
     error = None
     if request.method == 'POST':
@@ -38,18 +46,18 @@ def login():
         else:
             session['logged_in'] = True
             flash('You were just logged in!')
-            return redirect(url_for('welcome'))
-    return render_template('login.html', error = error)
+            return redirect('/welcome')
+    return render_template('home.html', error = error)
 
 
-@app.route('/welcome', methods=['GET', 'Post'])
-def welcome():
-    return render_template('welcome.html')
+# @app.route('/welcome', methods=['GET', 'Post'])
+# def welcome():
+#     return render_template('welcome.html')
 
 
 
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/welcome', methods=['POST', 'GET'])
 def index():
     if request.method == 'POST':
         task_content = request.form['content']
