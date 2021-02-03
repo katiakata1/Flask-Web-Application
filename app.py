@@ -63,22 +63,11 @@ def register():
         return 'There was an issue creating the user'
 
 
+
 @app.route('/welcome', methods=['POST', 'GET'])
 def welcome():
-    if request.method == 'POST':
-        item_requested = request.form.get('name')
-        new_item = Supplies(name = item_requested)
+    return render_template('welcome.html')
 
-        try: 
-            db.session.add(new_item)
-            db.session.commit()
-            return redirect('/welcome')
-        except:
-            return 'There was an issue adding your task'
-
-    else: 
-        items = Supplies.query.order_by(Supplies.date_requested).all()
-        return render_template('home.html', items = items)
 
 
 

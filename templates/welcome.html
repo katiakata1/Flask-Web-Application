@@ -37,11 +37,23 @@
             {% endfor %}
             </tr>
         </table>
+        <br>
+        <br>
     
-        <form class="form" action="/welcome" method = "POST">
-            <input type = "text" name="name" id="name">
+        <form class="form" action=" " method = "POST">
+            <label for="item_name">The name of the item</label>
+            <input id="item_name" type="text" name="item_name">
             <br>
-            <input type = "submit" name="Request Item">
+            <br>
+            <label for="reasons_for_request">The reason for the request</label>
+            <input id="reasons_for_request" type="text" name="reasons_for_request">
+            <br>
+            <br>
+            <label for="item_quantity">Quantity required</label>
+            <input id="item_quantity" type="text" name="item_quantity">
+            <br>
+            <br>
+            <button type="submit">Submit request</button>
         </form>
 
 
