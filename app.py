@@ -21,6 +21,7 @@ class User(db.Model):
     username = db.Column(db.String(30), nullable=False)
     password = db.Column(db.String(30), nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    supplies = db.relationship('Supplies', backref='user')
 
     def __repr__(self):
         return '<Name %r>' % self.id
@@ -33,9 +34,11 @@ class Todo(db.Model):
 class Supplies(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     item_name = db.Column(db.String(200), nullable=False)
-    reason_for_request = db.Column(db.String(200), nullable=False)
+    reason_for_request = db.Column(db.String(200))
     quantity = db.Column(db.Integer, nullable=False)
     date_requested = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user_id'))
+
 
     def __repr__(self):
         return '<Item %r>' % self.id
@@ -60,7 +63,7 @@ def register():
         cur.close()
         return redirect('/welcome')
     except:
-        return 'There was an issue creating the user'
+        return redirect('/welcome')
 
 
 

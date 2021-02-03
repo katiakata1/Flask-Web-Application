@@ -6,10 +6,24 @@ body {
     color: #151514;
 }
 
+h1 {
+    margin: 50px;
+}
+
 h2 {
     font-size: 15px;
 }
 
 .form {
     font-weight: 16px;
+}
+
+.content {
+    margin: 20px;
+    text-align: center;
+}
+
+table, td, th {
+    border: 1px solid #aaa;
+    margin: auto;
 }
