@@ -1,78 +1,84 @@
 from flask import Flask, render_template, request, url_for, redirect, session, flash
 from flask_sqlalchemy import SQLAlchemy
+from flask_mysqldb import MySQL
 from datetime import datetime
-
-
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = None
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SECRET_KEY'] = 'secret_key'
 db = SQLAlchemy(app)
 
-
+app.config['MYSQL_HOST'] = 'database-2.cqeuduzjsbcl.eu-west-2.rds.amazonaws.com'
+app.config['MYSQL_USER'] = 'admin'
+app.config['MYSQL_PASSWORD'] = 'Russia#1'
+app.config['MYSQL_DB'] = 'learning'
+mysql = MySQL(app)
 
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30), nullable=False)
-    paswword = db.Column(db.String(30), nullable=False)
+    password = db.Column(db.String(30), nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
         return '<Name %r>' % self.id
 
+class Todo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.String(200), nullable=False)
 
 class Supplies(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.String(200), nullable=False)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    item_name = db.Column(db.String(200), nullable=False)
+    reason_for_request = db.Column(db.String(200), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    date_requested = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
-        return '<Task %r>' % self.id
+        return '<Item %r>' % self.id
 
 
 
 
 
-@app.route('/', methods = ['GET', 'POST'])
-def login():
-    error = None
-    if request.method == 'POST':
+@app.route('/', methods = ['GET'])
+def dashboard():
+    return render_template('dashboard.html')
 
+@app.route('/register', methods=['POST'])
+def register():
+    username = request.form.get('username')
+    password = request.form.get('password')
 
-        if request.form['username'] != 'admin' or request.form['password'] != 'admin':
-            error = "Invalid Credentials. Please try again"
-        else:
-            session['logged_in'] = True
-            flash('You were just logged in!')
-            return redirect('/welcome')
-    return render_template('home.html', error = error)
-
-
-# @app.route('/welcome', methods=['GET', 'Post'])
-# def welcome():
-#     return render_template('welcome.html')
-
-
+    try: 
+        cur = mysql.connection.cursor()
+        cur.execute("INSERT INTO users(username, password) VALUES (%s, %s)", (username, password))
+        mysql.connection.commit()
+        cur.close()
+        return redirect('/welcome')
+    except:
+        return 'There was an issue creating the user'
 
 
 @app.route('/welcome', methods=['POST', 'GET'])
-def index():
+def welcome():
     if request.method == 'POST':
-        task_content = request.form['content']
-        new_task = Supplies(content = task_content)
+        item_requested = request.form.get('name')
+        new_item = Supplies(name = item_requested)
 
         try: 
-            db.session.add(new_task)
+            db.session.add(new_item)
             db.session.commit()
-            return redirect('/')
+            return redirect('/welcome')
         except:
             return 'There was an issue adding your task'
 
     else: 
-        tasks = Supplies.query.order_by(Supplies.date_created).all()
-        return render_template('welcome.html', tasks = tasks)
+        items = Supplies.query.order_by(Supplies.date_requested).all()
+        return render_template('home.html', items = items)
 
 
 
