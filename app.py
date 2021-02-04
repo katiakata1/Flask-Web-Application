@@ -21,23 +21,23 @@ class User(db.Model):
     username = db.Column(db.String(30), nullable=False)
     password = db.Column(db.String(30), nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
-    supplies = db.relationship('Supplies', backref='user')
+    # supplies = db.relationship('Supplies', backref='user')
 
     def __repr__(self):
-        return '<Name %r>' % self.id
+        return '<Name %r>' % self.username
 
-class Todo(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
-    description = db.Column(db.String(200), nullable=False)
+# class Todo(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     title = db.Column(db.String(200), nullable=False)
+#     description = db.Column(db.String(200), nullable=False)
 
 class Supplies(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     item_name = db.Column(db.String(200), nullable=False)
-    reason_for_request = db.Column(db.String(200))
+    reasons_for_request = db.Column(db.String(200))
     quantity = db.Column(db.Integer, nullable=False)
     date_requested = db.Column(db.DateTime, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user_id'))
+    # user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 
     def __repr__(self):
@@ -69,7 +69,23 @@ def register():
 
 @app.route('/welcome', methods=['POST', 'GET'])
 def welcome():
-    return render_template('welcome.html')
+    itemname = request.form.get('item_name')
+    reasons = request.form.get('reasons_for_request')
+    quantity = request.form.get('item_quantity')
+
+    try: 
+        cur = mysql.connection.cursor()
+        cur.execute("INSERT INTO supplies(item_name, reasons_for_request, quantity) VALUES (%s, %s, %s)" , (itemname, reasons, quantity))
+        mysql.connection.commit()
+        cur.close()
+        return redirect('/welcome')
+        
+    except: 
+        return render_template('welcome.html', item_name = itemname, reasons_for_request = reasons, item_quantity = quantity)
+
+    # tasks = Supplies.query.order_by(Supplies.date_requested).all()  
+    # return render_template('welcome.html', item_name = itemname)
+    
 
 
 

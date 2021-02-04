@@ -27,8 +27,8 @@
             <tr>
                 <td>{{ item.item_name }}</td> 
                 <td>{{ item.reasons_for_request }}</td>
-                <td>{{ item.quantity }}</td> 
-                <td>{{ task.date_created.date()}}</td>
+                <td>{{ item.item_quantity }}</td> 
+                <td>{{ item.date_requested.date()}}</td>
                 <td>
                     <a href="/delete/{{item.id}}">Delete</a>
                     <br>
@@ -40,7 +40,7 @@
         <br>
         <br>
     
-        <form class="form" action=" " method = "POST">
+        <form class="form" action="/welcome" method = "POST">
             <label for="item_name">The name of the item</label>
             <input id="item_name" type="text" name="item_name">
             <br>

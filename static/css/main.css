@@ -26,4 +26,5 @@ h2 {
 table, td, th {
     border: 1px solid #aaa;
     margin: auto;
+    padding: 10px;
 }
