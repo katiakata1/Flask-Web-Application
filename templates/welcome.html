@@ -30,14 +30,19 @@
                     <td>{{ item.3 }}</td> 
                     <td>{{ item.4 }}</td>
                     <td>
-                        <a href="/delete/{{item.id}}">Delete</a>
+                        <form action="{{url_for('delete_item', id=item.0)}}" method="post">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <input type="submit" value="Delete">
+                        </form>
+                        <!-- <a href="/delete/{{item.id}}">Delete</a> -->
                         <br>
                         <a href="/update/{{item.id}}">Update</a>
                     </td>
                 {% endfor %}
                 </tr>
         </table>
-        <h1>Add more requests below:</h1>
+        <h1>Add more requests below</h1>
+        <br>
     
         <form class="form" action="/supplies" method = "POST">
             <label for="item_name">The name of the item</label>

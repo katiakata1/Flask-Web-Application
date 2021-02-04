@@ -90,6 +90,25 @@ def supplies():
         return render_template('welcome.html', items = data)
 
 
+# Delete Article
+@app.route('/delete_item/<int:id>', methods=['POST'])
+def delete_item(id):
+    # Create cursor
+    cur = mysql.connection.cursor() 
+
+    # Execute
+    cur.execute("DELETE FROM supplies WHERE id = %s", [id])
+
+    # Commit to DB
+    mysql.connection.commit()
+
+    #Close connection
+    cur.close()
+
+    return redirect(url_for('supplies'))
+
+
+
 # @app.route('/welcome', methods=['GET'])
 # def welcome():
 #     cur = mysql.connection.cursor()
