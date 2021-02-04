@@ -83,7 +83,11 @@ def supplies():
 
 @app.route('/welcome', methods=['GET'])
 def welcome():
-    return render_template('welcome.html')
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM supplies")
+    data = cur.fetchall()
+
+    return render_template('welcome.html', items = data)
 
 # @app.route('/delete/<int:id>')
 # def delete(id):

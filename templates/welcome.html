@@ -23,19 +23,21 @@
                 <th>Date Requested</th>
                 <th>Actions</th>
             </tr>
-            {%for item in items%}
-            <tr>
-                <td>{{ item.item_name }}</td> 
-                <td>{{ item.reasons_for_request }}</td>
-                <td>{{ item.item_quantity }}</td> 
-                <td>{{ item.date_requested.date()}}</td>
-                <td>
-                    <a href="/delete/{{item.id}}">Delete</a>
-                    <br>
-                    <a href="/update/{{item.id}}">Update</a>
-                </td>
-            {% endfor %}
-            </tr>
+            <form action="/welcome" method = "GET">
+                {%for item in items%}
+                <tr>
+                    <td>{{ item.0 }}</td> 
+                    <td>{{ item.1 }}</td>
+                    <td>{{ item.2 }}</td> 
+                    <td>{{ item.3 }}</td>
+                    <td>
+                        <a href="/delete/{{item.id}}">Delete</a>
+                        <br>
+                        <a href="/update/{{item.id}}">Update</a>
+                    </td>
+                {% endfor %}
+                </tr>
+            </form>
         </table>
         <br>
         <br>
