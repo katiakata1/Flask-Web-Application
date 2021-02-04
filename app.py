@@ -1,13 +1,13 @@
+import MySQLdb
 from flask import Flask, render_template, request, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_mysqldb import MySQL
 from datetime import datetime
 
 app = Flask(__name__)
-app.run(debug=True)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/project.db'
 # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-# app.config['SECRET_KEY'] = 'secret_key'
+app.config['SECRET_KEY'] = 'secret_key'
 # db = SQLAlchemy(app)
 
 app.config['MYSQL_HOST'] = 'database-2.cqeuduzjsbcl.eu-west-2.rds.amazonaws.com'
@@ -63,52 +63,27 @@ def register():
         return redirect('/welcome')
 
 
+@app.route('/supplies', methods=['POST'])
+def supplies():
+    cur = mysql.connection.cursor()
+
+    try:
+        itemname = request.form.get('item_name')
+        reasons = request.form.get('reasons_for_request')
+        quantity = int(request.form.get('quantity'))
+
+        cur.execute("INSERT INTO supplies(item_name, reason_for_request, quantity) VALUES (%s, %s, %s)" , (itemname, reasons, quantity))
+        mysql.connection.commit()
+        return render_template('welcome.html')
+    except (MySQLdb.Error, MySQLdb.Warning) as e:
+        print(e)
+        return e
+    finally:
+        cur.close()
 
 @app.route('/welcome', methods=['GET'])
 def welcome():
-    itemname = request.form.get('item_name')
-    reasons = request.form.get('reasons_for_request')
-    quantity = request.form.get('item_quantity')
-    # items = Supplies.query.all()  
-
-    try: 
-        cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO supplies(item_name, reasons_for_request, quantity) VALUES (%s, %s, %s)" , (itemname, reasons, quantity))
-        mysql.connection.commit()
-        # cur.execute("SELECT item_name AS item_name, reasons_for_request AS reasons_for_request, quantity AS item_quantity FROM supplies;")
-        # data = cur.fetchall()
-        # print(data)
-        cur.close()
-        return redirect('/welcome')
-        
-    except:
-        return redirect('/welcome')
-        # items = Supplies.query.all()  
-        # return render_template('welcome.html', items = items)
-
-def has_no_empty_params(rule):
-    defaults = rule.defaults if rule.defaults is not None else ()
-    arguments = rule.arguments if rule.arguments is not None else ()
-    return len(defaults) >= len(arguments)
-
-@app.route("/site-map")
-def site_map():
-    links = []
-    for rule in app.url_map.iter_rules():
-        # Filter out rules we can't navigate to in a browser
-        # and rules that require parameters
-        if "GET" in rule.methods and has_no_empty_params(rule):
-            url = url_for(rule.endpoint, **(rule.defaults or {}))
-            links.append((url, rule.endpoint))
-
-
-
-    # tasks = Supplies.query.order_by(Supplies.date_requested).all()  
-    # return render_template('welcome.html', item_name = itemname)
-    
-
-
-
+    return render_template('welcome.html')
 
 # @app.route('/delete/<int:id>')
 # def delete(id):
@@ -137,3 +112,4 @@ def site_map():
 #             return 'There was an issue updating yout task'
 #     else: 
 #         return render_template('update.html', task=task)
+app.run(debug=True)
