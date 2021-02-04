@@ -58,36 +58,45 @@ def register():
         cur.execute("INSERT INTO users(username, password) VALUES (%s, %s)", (username, password))
         mysql.connection.commit()
         cur.close()
-        return redirect('/welcome')
+        return redirect('/supplies')
     except:
-        return redirect('/welcome')
+        return redirect('/supplies')
 
 
-@app.route('/supplies', methods=['POST'])
+@app.route('/supplies', methods=['GET', 'POST'])
 def supplies():
-    cur = mysql.connection.cursor()
 
-    try:
-        itemname = request.form.get('item_name')
-        reasons = request.form.get('reasons_for_request')
-        quantity = int(request.form.get('quantity'))
+    if request.method == 'POST':
+        cur = mysql.connection.cursor()
 
-        cur.execute("INSERT INTO supplies(item_name, reason_for_request, quantity) VALUES (%s, %s, %s)" , (itemname, reasons, quantity))
-        mysql.connection.commit()
-        return render_template('welcome.html')
-    except (MySQLdb.Error, MySQLdb.Warning) as e:
-        print(e)
-        return e
-    finally:
-        cur.close()
+        try:
+            itemname = request.form.get('item_name')
+            reasons = request.form.get('reasons_for_request')
+            quantity = int(request.form.get('quantity'))
 
-@app.route('/welcome', methods=['GET'])
-def welcome():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM supplies")
-    data = cur.fetchall()
+            cur.execute("INSERT INTO supplies(item_name, reason_for_request, quantity) VALUES (%s, %s, %s)" , (itemname, reasons, quantity))
+            mysql.connection.commit()
+            return redirect('/supplies')
+        except (MySQLdb.Error, MySQLdb.Warning) as e:
+            print(e)
+            return e
+        finally:
+            cur.close()
 
-    return render_template('welcome.html', items = data)
+    else:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM supplies")
+        data = cur.fetchall()
+        return render_template('welcome.html', items = data)
+
+
+# @app.route('/welcome', methods=['GET'])
+# def welcome():
+#     cur = mysql.connection.cursor()
+#     cur.execute("SELECT * FROM supplies")
+#     data = cur.fetchall()
+
+#     return render_template('welcome.html', items = data)
 
 # @app.route('/delete/<int:id>')
 # def delete(id):

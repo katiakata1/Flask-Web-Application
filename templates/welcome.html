@@ -23,13 +23,12 @@
                 <th>Date Requested</th>
                 <th>Actions</th>
             </tr>
-            <form action="/welcome" method = "GET">
                 {%for item in items%}
                 <tr>
-                    <td>{{ item.0 }}</td> 
-                    <td>{{ item.1 }}</td>
-                    <td>{{ item.2 }}</td> 
-                    <td>{{ item.3 }}</td>
+                    <td>{{ item.1 }}</td> 
+                    <td>{{ item.2 }}</td>
+                    <td>{{ item.3 }}</td> 
+                    <td>{{ item.4 }}</td>
                     <td>
                         <a href="/delete/{{item.id}}">Delete</a>
                         <br>
@@ -37,10 +36,8 @@
                     </td>
                 {% endfor %}
                 </tr>
-            </form>
         </table>
-        <br>
-        <br>
+        <h1>Add more requests below:</h1>
     
         <form class="form" action="/supplies" method = "POST">
             <label for="item_name">The name of the item</label>
