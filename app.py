@@ -1,131 +1,194 @@
-from flask import Flask, render_template, request, url_for, redirect, session, flash
+import MySQLdb
+from flask import Flask, render_template, request, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
+from flask_mysqldb import MySQL
 from datetime import datetime
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/project.db'
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SECRET_KEY'] = 'secret_key'
-db = SQLAlchemy(app)
+# db = SQLAlchemy(app)
+
+app.config['MYSQL_HOST'] = 'database-2.cqeuduzjsbcl.eu-west-2.rds.amazonaws.com'
+app.config['MYSQL_USER'] = 'admin'
+app.config['MYSQL_PASSWORD'] = 'Russia#1'
+app.config['MYSQL_DB'] = 'learning'
+mysql = MySQL(app)
+
+# class User(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     username = db.Column(db.String(30), nullable=False)
+#     password = db.Column(db.String(30), nullable=False)
+#     date_created = db.Column(db.DateTime, default=datetime.utcnow)
+#     # supplies = db.relationship('Supplies', backref='user')
+
+#     def __repr__(self):
+#         return '<Name %r>' % self.username
+
+# class Todo(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     title = db.Column(db.String(200), nullable=False)
+#     description = db.Column(db.String(200), nullable=False)
+
+# class Supplies(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     item_name = db.Column(db.String(200), nullable=False)
+#     reasons_for_request = db.Column(db.String(200))
+#     quantity = db.Column(db.Integer, nullable=False)
+#     date_requested = db.Column(db.DateTime, default=datetime.utcnow)
+#     # user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(30), nullable=False)
-    paswword = db.Column(db.String(30), nullable=False)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+#     def __repr__(self):
+#         return '<Item %r>' % self.id
 
-    def __repr__(self):
-        return '<Name %r>' % self.id
+@app.route('/', methods = ['GET'])
+def dashboard():
+    return render_template('dashboard.html')
 
-class Supplies(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.String(200), nullable=False)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+@app.route('/register', methods=['POST'])
+def register():
+    username = request.form.get('username')
+    password = request.form.get('password')
 
-    def __repr__(self):
-        return '<Task %r>' % self.id
-
-
-@app.route('/login', methods = ['GET', 'POST'])
-
-def login():
-    error = None
-    if request.method == 'POST':
-
-
-        if request.form['username'] != 'admin' or request.form['password'] != 'admin':
-            error = "Invalid Credentials. Please try again"
-        else:
-            session['logged_in'] = True
-            flash('You were just logged in!')
-            return redirect(url_for('welcome'))
-    return render_template('login.html', error = error)
-
-
-@app.route('/welcome', methods=['GET', 'Post'])
-def welcome():
-    return render_template('welcome.html')
-
-
-
-
-@app.route('/', methods=['POST', 'GET'])
-def index():
-    if request.method == 'POST':
-        task_content = request.form['content']
-        new_task = Supplies(content = task_content)
-
-        try: 
-            db.session.add(new_task)
-            db.session.commit()
-            return redirect('/')
-        except:
-            return 'There was an issue adding your task'
-
-    else: 
-        tasks = Supplies.query.order_by(Supplies.date_created).all()
-        return render_template('welcome.html', tasks = tasks)
-
-
-
-@app.route('/delete/<int:id>')
-def delete(id):
-    task_to_delete = Supplies.query.get_or_404(id)
-
-    try:
-        db.session.delete(task_to_delete)
-        db.session.commit()
-        return redirect('/')
+    try: 
+        cur = mysql.connection.cursor()
+        cur.execute("INSERT INTO users(username, password) VALUES (%s, %s)", (username, password))
+        mysql.connection.commit()
+        cur.close()
+        return redirect('/supplies')
     except:
-        return 'There was a problem deliting your task'
+        return redirect('/supplies')
 
 
-
-@app.route('/update/<int:id>', methods=['GET', 'POST'])
-def update(id):
-    task = Supplies.query.get_or_404(id)
-
+@app.route('/supplies', methods=['GET', 'POST'])
+def supplies():
     if request.method == 'POST':
-        task.content = request.form['content']
+        cur = mysql.connection.cursor()
 
         try:
-            db.session.commit()
-            return redirect('/')
-        except: 
-            return 'There was an issue updating yout task'
-    else: 
-        return render_template('update.html', task=task)
+            itemname = request.form.get('item_name')
+            reasons = request.form.get('reasons_for_request')
+            quantity = int(request.form.get('quantity'))
 
-if __name__=='__main__':
-    app.run(debug=True)
+            cur.execute("INSERT INTO supplies(item_name, reason_for_request, quantity) VALUES (%s, %s, %s)" , (itemname, reasons, quantity))
+            mysql.connection.commit()
+            return redirect('/supplies')
+        except (MySQLdb.Error, MySQLdb.Warning) as e:
+            print(e)
+            return e
+        finally:
+            cur.close()
+    else:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM supplies")
+        data = cur.fetchall()
+        return render_template('supplies.html', results = data)
+
+# Delete Item
+@app.route('/delete_item/<int:id>', methods=['GET', 'POST', 'DELETE'])
+def delete_item(id):
+    # Create cursor
+    cur = mysql.connection.cursor() 
+
+    # Execute
+    cur.execute("DELETE FROM supplies WHERE id = %s", [id])
+
+    # Commit to DB
+    mysql.connection.commit()
+
+    #Close connection
+    cur.close()
+
+    return redirect(url_for('supplies'))
+
+#View Item
+@app.route('/item/<id>', methods=['GET'])
+def view_item(id):
+    item_id = int(id)
+    cur = mysql.connection.cursor()
+    try:
+        query = "SELECT * from supplies WHERE id=%s"
+        cur.execute(query, [item_id])
+        item_found = cur.fetchall()[0]
+        return render_template('item.html', item = item_found)
+    except (MySQLdb.Error, MySQLdb.Warning) as e:
+        print(e)
+        return e
+    finally:
+        cur.close()
 
 
+#Update Item
+@app.route('/item/<int:id>', methods=['POST'])
+def update_item(id):
+    itemname = request.form.get('item_name', False)
+    reasons = request.form.get('reasons_for_request', False)
+    quantity = int(request.form.get('quantity', False))
+    
+    cur = mysql.connection.cursor()
+    cur.execute("""
+            UPDATE supplies
+            SET item_name=%s, reason_for_request=%s, quantity=%s WHERE id = %s 
+        # """, [itemname, reasons, quantity, id])
 
+    mysql.connection.commit()
+    cur.close()
+    return redirect(url_for('supplies'))
+    # if request.method == 'POST':
+    #     itemname = request.form.get('item.1')
+    #     reasons = request.form.get('item.2')
+    #     quantity = request.form.get('item.3')
+        
+    #     cur = mysql.connection.cursor() 
+    #     cur.execute("""
+    #            UPDATE supplies
+    #            SET item_name=%s, reason_for_request=%s, quantity=%s
+    #            WHERE id=%s
+    #         """, [itemname, reasons, quantity, id])
 
-# @app.route('/logout')
-# def logout():
-#     session.pop('logged_in', None)
-#     flash('You were just logged out!')
-#     return redirect(url_for('home'))
-
-
-
-
-
-
-
-
-        # if request.method == 'POST': #if 'post' happends do thi
-    #     user_name = request.form['name'] #take the value put in name input and store in a user_name variable
-    #     new_user = User(username=user_name) #take the user_name value and put it in a User db
-
-    #     # Push to Database
-    #     try:
-    #          db.session.add(new_user)
-    #          db.session.commit()
-    #          return redirect ('/login')
-    #     except:
-    #          return "There was an error adding your name"
-
+    #     mysql.connection.commit()
+    #     return redirect('supplies')
     # else:
-    #     return render_template('login.html')
+    #     return "hello"
+
+
+
+# @app.route('/welcome', methods=['GET'])
+# def welcome():
+#     cur = mysql.connection.cursor()
+#     cur.execute("SELECT * FROM supplies")
+#     data = cur.fetchall()
+
+#     return render_template('welcome.html', items = data)
+
+# @app.route('/delete/<int:id>')
+# def delete(id):
+#     # task_to_delete = Supplies.query.get_or_404(id)
+
+#     try:
+#         # db.session.delete(task_to_delete)
+#         # db.session.commit()
+#         return redirect('/')
+#     except:
+#         return 'There was a problem deliting your task'
+
+
+
+# @app.route('/update/<int:id>', methods=['GET', 'POST'])
+# def update(id):
+#     task = Supplies.query.get_or_404(id)
+
+#     if request.method == 'POST':
+#         task.content = request.form['content']
+
+#         try:
+#             db.session.commit()
+#             return redirect('/')
+#         except: 
+#             return 'There was an issue updating yout task'
+#     else: 
+#         return render_template('update.html', task=task)
+if __name__ == "__main__":
+    app.run(debug=True)
