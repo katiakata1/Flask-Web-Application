@@ -16,7 +16,6 @@ app.config['MYSQL_PASSWORD'] = 'Russia#1'
 app.config['MYSQL_DB'] = 'learning'
 mysql = MySQL(app)
 
-
 # class User(db.Model):
 #     id = db.Column(db.Integer, primary_key=True)
 #     username = db.Column(db.String(30), nullable=False)
@@ -65,7 +64,6 @@ def register():
 
 @app.route('/supplies', methods=['GET', 'POST'])
 def supplies():
-
     if request.method == 'POST':
         cur = mysql.connection.cursor()
 
@@ -82,16 +80,14 @@ def supplies():
             return e
         finally:
             cur.close()
-
     else:
         cur = mysql.connection.cursor()
         cur.execute("SELECT * FROM supplies")
         data = cur.fetchall()
-        return render_template('welcome.html', items = data)
+        return render_template('supplies.html', results = data)
 
-
-# Delete Article
-@app.route('/delete_item/<int:id>', methods=['POST'])
+# Delete Item
+@app.route('/delete_item/<int:id>', methods=['GET', 'POST', 'DELETE'])
 def delete_item(id):
     # Create cursor
     cur = mysql.connection.cursor() 
@@ -106,6 +102,56 @@ def delete_item(id):
     cur.close()
 
     return redirect(url_for('supplies'))
+
+#View Item
+@app.route('/item/<id>', methods=['GET'])
+def view_item(id):
+    item_id = int(id)
+    cur = mysql.connection.cursor()
+    try:
+        query = "SELECT * from supplies WHERE id=%s"
+        cur.execute(query, [item_id])
+        item_found = cur.fetchall()[0]
+        return render_template('item.html', item = item_found)
+    except (MySQLdb.Error, MySQLdb.Warning) as e:
+        print(e)
+        return e
+    finally:
+        cur.close()
+
+
+#Update Item
+@app.route('/item/<int:id>', methods=['POST'])
+def update_item(id):
+    itemname = request.form.get('item_name', False)
+    reasons = request.form.get('reasons_for_request', False)
+    quantity = int(request.form.get('quantity', False))
+    
+    cur = mysql.connection.cursor()
+    cur.execute("""
+            UPDATE supplies
+            SET item_name=%s, reason_for_request=%s, quantity=%s WHERE id = %s 
+        # """, [itemname, reasons, quantity, id])
+
+    mysql.connection.commit()
+    cur.close()
+    return redirect(url_for('supplies'))
+    # if request.method == 'POST':
+    #     itemname = request.form.get('item.1')
+    #     reasons = request.form.get('item.2')
+    #     quantity = request.form.get('item.3')
+        
+    #     cur = mysql.connection.cursor() 
+    #     cur.execute("""
+    #            UPDATE supplies
+    #            SET item_name=%s, reason_for_request=%s, quantity=%s
+    #            WHERE id=%s
+    #         """, [itemname, reasons, quantity, id])
+
+    #     mysql.connection.commit()
+    #     return redirect('supplies')
+    # else:
+    #     return "hello"
 
 
 
@@ -144,4 +190,5 @@ def delete_item(id):
 #             return 'There was an issue updating yout task'
 #     else: 
 #         return render_template('update.html', task=task)
-app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True)

@@ -23,23 +23,19 @@
                 <th>Date Requested</th>
                 <th>Actions</th>
             </tr>
-                {%for item in items%}
+                {%for item in results %}
                 <tr>
                     <td>{{ item.1 }}</td> 
                     <td>{{ item.2 }}</td>
                     <td>{{ item.3 }}</td> 
                     <td>{{ item.4 }}</td>
                     <td>
-                        <!-- <form action="{{url_for('delete_item', id=item.0)}}" method="post">
+                        <form action="{{url_for('delete_item', id=item.0)}}" method="DELETE">
                             <input type="hidden" name="_method" value="DELETE">
                             <input type="submit" value="Delete">
-                        </form> -->
-                        <!-- <a href="/delete/{{item.id}}">Delete</a> -->
+                        </form>
                         <br>
-                        <!-- <form action="{{url_for('update_item')}}" method="post">
-                            <input type="hidden" name="_method1" value="UPDATE">
-                            <input type="submit" value="UPDATE">
-                        </form> -->
+                        <a href='/item/{{item.0}}'>View</a>
                         <!-- <a href="/update/{{item.id}}">Update</a> -->
                     </td>
                 {% endfor %}
