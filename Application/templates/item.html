@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <h1>
+        This is the item 
+        <br>
+        {{ item.1 }}
+    </h1>
+
+    <form class="form" action="{{url_for('update_item', id=item.0)}}" method="POST">
+        <label for="item_name">The name of the item</label>
+        <input id="item_name" type="text" name="item_name" value="{{item.1}}">
+        <br>
+        <br>
+        <label for="reasons_for_request">The reason for the request</label>
+        <input id="reasons_for_request" type="text" name="reasons_for_request" value="{{item.2}}">
+        <br>
+        <br>
+        <label for="quantity">Quantity required</label>
+        <input id="quantity" type="text" name="quantity" value="{{item.3}}">
+        <br>
+        <br>
+        <button type="submit">Submit request</button>
+    </form>
+
+{% endblock %}
