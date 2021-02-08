@@ -1,3 +1,14 @@
-Python == 3.8.7
-Flask == 1.1.2
+click == 7.1.2
+Flask  == 1.1.2
+Flask-MySQLdb == 0.2.0
+itsdangerous == 1.1.0
+Jinja2 == 2.11.2
+MarkupSafe == 1.1.1
+mysqlclient == 2.0.3
+pip == 20.2.3
+PyMySQL == 1.0.2
+setuptools == 49.2.1
 Werkzeug == 1.0.1
+Flask-Testing == 0.8.1
+pytest == 6.2.2
+virtualenv == 20.4.0
