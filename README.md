@@ -10,13 +10,17 @@ an unreasonable need of contacting the manager on regular basis in order to info
 supplies. In most of the cases, the wrong supplies were ordered and delivered to the cleaner, rising a conflict between 
 the manager and the employee. 
 
-This 
+The current flask application is the prototype usefull for small cleaning companies, that would help to reduce time 
+communicated with a manager about the supplies and increase the efficiency of cleaners work. Instead of personally contacting 
+the manager, the cleaning associate could login into the system, see what requests he/she made in the past and add, update and
+delete the requests.
 
-The main objectives reahched in this 
+The main points were considered, while desinging the application:
+ - Front end design using FLask framework, python coding language and Jinja template engine
+ - CRUD functionality ensuring ADD, UPDATE and DELETE functionalities
+ - Working connection between the user input and Flask-Mysql database saving the request 
+ - Set of tests (Unittest) checking the functionality of the application 
+
+ 
 
 
-
-
-
-
-<img src="https://www.pngfind.com/pngs/m/104-1044449_python-logo-clipart-drawing-flask-python-hd-png.png">
