@@ -9,7 +9,7 @@ app.config['SECRET_KEY'] = 'secret_key'
 
 app.config['MYSQL_HOST'] = 'database-2.cqeuduzjsbcl.eu-west-2.rds.amazonaws.com'
 app.config['MYSQL_USER'] = 'admin'
-app.config['MYSQL_PASSWORD'] = 'Russia#1'
+app.config['MYSQL_PASSWORD'] = 'adminadmin'
 app.config['MYSQL_DB'] = 'learning'
 mysql = MySQL(app)
 
