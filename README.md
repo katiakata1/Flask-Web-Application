@@ -25,19 +25,25 @@ The main points were considered, while desinging the application:
 
 The idea was to create a Relational Database connecting Table1 user credetials and Table2 supply requests. 
 This was achieved in a MySQL Workbench, which was connected to the AWS database instance. Therefore, iputs were saved on the cloud. The diagram below visualises the relationship between two tables: 
+<br>
 
 ![Screenshot (5)](https://user-images.githubusercontent.com/62849876/109809960-d89e9000-7c20-11eb-885f-8085102da03c.png)
+<br>
 
 When User logins, his/her credetials are saved in the database:
+<br>
 ![page3pr](https://user-images.githubusercontent.com/62849876/109810190-21564900-7c21-11eb-90c1-ae050ac6a776.png)
 
+<br>
 After that the User is redirected to the home page, where all the past request's information is available to view, update
 and delete. All requests are saved in the database, but in separate table and can be updated or deleted in a real time: 
+<br>
 ![page7pr](https://user-images.githubusercontent.com/62849876/109810468-785c1e00-7c21-11eb-9b0e-c86735052757.png)
 
 ## User Interface :lotus_position:
 
 The front page of the app looks the following:
+<br>
 
 ![page2pr](https://user-images.githubusercontent.com/62849876/109810661-b9ecc900-7c21-11eb-8160-6593beafa047.png)
 
@@ -46,7 +52,7 @@ After this step the user is redirected to the Home page:
 <br>
 
 ![page4pr](https://user-images.githubusercontent.com/62849876/109810801-e6a0e080-7c21-11eb-8766-eac5bdcb44b7.png)
-
+<br>
 The user can type supplies needed in appropriate sections. When the user deletes the request, it dissappears from the 
 table and from the database. However, if the user wants to update the request, he/she can press View button and see 
 the following: 
