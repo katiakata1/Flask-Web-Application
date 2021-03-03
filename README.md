@@ -7,7 +7,7 @@ As new technologies arise, there must be changes done to an usual data managemen
 
 The project idea was to create an responsive application serving a cleaning industry, where the 
 employee/cleaner could login into the system and request the supplies from the manager needed 
-to deliver the best cleaning experience. <br> 
+to deliver the best cleaning experience. 
 While working as a communal area cleaning associate I came across with 
 an unreasonable need of contacting the manager on regular basis in order to inform him/her of the shortage of cleaning supplies. In most of the cases, the wrong supplies were ordered and delivered to the cleaner, rising a conflict between the manager and the employee. 
 
