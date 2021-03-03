@@ -38,6 +38,7 @@ When User logins, his/her credetials are saved in the database:
 After that the User is redirected to the home page, where all the past request's information is available to view, update
 and delete. All requests are saved in the database, but in separate table and can be updated or deleted in a real time: 
 <br>
+
 ![page7pr](https://user-images.githubusercontent.com/62849876/109810468-785c1e00-7c21-11eb-9b0e-c86735052757.png)
 
 ## User Interface :lotus_position:
